@@ -12,3 +12,8 @@ modern.jsonp
 resources/sass/.sass-cache/
 resources/.arch-internal-preview.css
 .arch-internal-preview.css
+
+.vscode/
+
+# File containing station and token IDs so they don't get checked in.
+secrets.js

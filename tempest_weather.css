@@ -1,0 +1,53 @@
+body {
+  background-color: powderblue;
+}
+
+#temperature {
+	background-color: green;
+}
+
+#wind {
+    background-color: darkblue;
+}
+
+#humidity {
+	background-color: green;
+}
+
+#barometer {
+    background-color: darkblue;
+}
+
+#forecast{
+	
+	background-color: brown;
+	  color:white;
+}
+
+.infotile{
+	min-width: 500;
+	width : 250; 
+	height : 250;
+	color: white;
+	display: inline-block;
+}
+
+#status {
+  background-color: black;
+  color:white;
+}
+
+.bottombar {
+	position: fixed;
+	bottom:0;
+	left:0;
+	width:100%
+}
+
+#air_temperature{
+	font-size: 60px;
+}
+
+#relative_humidity{
+	font-size: 48px;
+}

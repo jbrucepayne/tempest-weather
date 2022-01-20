@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Tempest Weather</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="tempest_weather.css">
+	</head>
+	
+	<body>
+		<div id="info">
+			Simple weather report example from <a href="https://weatherflow.com/tempest-weather-system/">WeatherFlow Tempest Weather Station</a>
+		</div>
+
+		<div id="temperature" class="infotile">
+			<h3> Temperature </h3>
+			<p><span id="air_temperature">--</span> <span id="air_temperature_units"> </span></p>
+			<p>Feels like: <span id="feels_like_temperature">--</span> <span id="feels_like_temperature_units"> </span></p>			
+		</div>
+
+		<div id="humidity" class="infotile">
+			<h3> Humidity </h3>
+			<p> <span id="relative_humidity">--</span> <span id="relative_humidity_units"> </span></p>
+			<p> <span id="wet_bulb_temperature">--</span> <span id="wet_bulb_temperature_units"> </span></p>
+		</div>
+		
+		<div id="barometer" class="infotile">
+			<h3> Barometric Pressure </h3>
+			<p> <span id="barometric_pressure">--</span> <span id="barometric_pressure_units"> </span></p>
+			<p> <span id="pressure_trend">--</span></p>
+		</div>
+
+		<div id="wind" class="infotile">
+			<h3> Wind Speed </h3>
+			<p> <span id="wind_speed">--</span> <span id="wind_speed_units"> </span></p>
+			<p> <span id="wind_gust">--</span> <span id="wind_gust_units"> </span></p>
+		</div>		
+
+		<div id="forecast">
+			<h3> Daily Forecast </h3>
+			<table>
+		  <tr>
+			<th>Today</th>
+			<th>Tomorrow</th>
+			<th>The next day</th>
+			<th>Day 4</th>
+  		  </tr>
+		  <tr>
+			<td> <div id="forecast_day_0">
+				</div></td>
+			<td> <div id="forecast_day_1">initializing</div></td>
+			<td> <div id="forecast_day_2">initializing</div></td>
+			<td> <div id="forecast_day_3">initializing</div></td>
+  		  </tr>
+		</table>	
+		</div>		
+
+		<div id="status" class="bottombar">
+			<p id="current_status_text">No current status</p>
+		</div>
+
+		<script type="module">
+			
+			import { GetWeatherCurrentConditions, GetWeatherForecast } from './TempestWeather.js';
+			import { WeatherForecast } from  './WeatherForecast.js';
+			import { WeatherConditions } from  './WeatherConditions.js';
+			import { station, token } from './secrets.js';
+			let doForecast = true;   // Use call to forecast or observations?
+			let updateThresholdMs = 60000;   // Update every 60 seconds by default.
+
+			processUpdate();
+			
+			function processUpdate() {
+				if (doForecast) {
+					processWeatherForecast();
+				}
+				else {
+					processWeatherCurrentConditions();
+				}
+			}			
+
+			function processWeatherForecast() {
+				GetWeatherForecast(station, token, updateWeatherForecastUI);
+				setTimeout(processUpdate, updateThresholdMs);
+			}
+			
+		    function processWeatherCurrentConditions() {
+				GetWeatherCurrentConditions(station, token, updateWeatherCurrentConditionsUI);
+				setTimeout(processUpdate, updateThresholdMs);
+			}
+
+			function updateWeatherForecastUI(weatherForecast) {
+				document.getElementById("forecast_day_0").innerHTML = weatherForecast.dailyForecasts[0].conditions;
+				document.getElementById("forecast_day_1").innerHTML = weatherForecast.dailyForecasts[1].conditions;//
+				document.getElementById("forecast_day_2").innerHTML = weatherForecast.dailyForecasts[2].conditions;
+				document.getElementById("forecast_day_3").innerHTML = weatherForecast.dailyForecasts[3].conditions;
+				updateWeatherCurrentConditionsUI (weatherForecast.currentConditions);
+			}
+
+			function updateWeatherCurrentConditionsUI(currentConditions) {
+				let units = currentConditions.units;
+				document.getElementById("air_temperature").innerHTML = currentConditions.airTemperature;
+				document.getElementById("air_temperature_units").innerHTML = units.temperatureUnits;
+				document.getElementById("feels_like_temperature").innerHTML = currentConditions.feelsLike;
+				document.getElementById("feels_like_temperature_units").innerHTML = units.temperatureUnits;
+
+				document.getElementById("relative_humidity").innerHTML = currentConditions.relativeHumidity;
+				document.getElementById("relative_humidity_units").innerHTML = "%";
+				document.getElementById("wet_bulb_temperature").innerHTML = currentConditions.wetBulbTemperature;
+				document.getElementById("wet_bulb_temperature_units").innerHTML = units.temperatureUnits;
+
+				document.getElementById("barometric_pressure").innerHTML = currentConditions.seaLevelPressure;
+				document.getElementById("barometric_pressure_units").innerHTML = units.pressureUnits;
+				document.getElementById("pressure_trend").innerHTML = currentConditions.pressureTrend;
+				
+				document.getElementById("wind_speed").innerHTML = currentConditions.windSpeedAvg;
+				document.getElementById("wind_speed_units").innerHTML = units.windSpeedUnits;
+				document.getElementById("wind_gust").innerHTML = currentConditions.windSpeedGust;
+				document.getElementById("wind_gust_units").innerHTML = units.windSpeedUnits;
+
+				updateStatusUI("Weather Data Current: " + new Date().toLocaleString());
+			}
+			
+			function updateStatusUI(status){
+				document.getElementById("current_status_text").innerHTML = status;
+			}
+			
+			function onWindowResize() {
+					alert("TODO: Add resize code!!!");
+			}
+
+		</script>
+
+	</body>
+</html>
